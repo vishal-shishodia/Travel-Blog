@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <section class="py-5">
+      
+      <div class="container text-center">
+        <p class="h6 mb-0 text-uppercase text-primary">{{post.title}}</p>
+        <ul class="list-inline small text-uppercase mb-0">
+          <li class="list-inline-item align-middle"><img class="rounded-circle shadow-sm" src="{{post.author.profile_picture.url}}" alt="" width="40"/></li>
+          <li class="list-inline-item mr-0 text-muted align-middle">By </li>
+          <li class="list-inline-item align-middle mr-0"><a class="font-weight-bold reset-anchor" href="#">{{post.author.user.username}}</a></li>
+          <li class="list-inline-item text-muted align-middle mr-0">|</li>
+          <li class="list-inline-item text-muted align-middle mr-0">{{post.timestamp}}</li>
+          <li class="list-inline-item text-muted align-middle mr-0">|</li>
+          <li class="list-inline-item text-muted align-middle">{{post.comment_count}}</li>
+        </ul>
+      </div><img class="w-100 py-5" src="{{post.thumbnail.url}}" alt="">
+     
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mb-5 mb-lg-0">
+            <p class="lead first-letter-styled line-height-lg">{{post.content}}</p>
+            {% if request.user.is_staff %}
+              
+                <!-- Link--><a class="nav-link" href="{% url 'create' %}">Update</a>
+                <a class="nav-link" href="{% url 'delete' post.id %}">Delete</a>
+             
+              {% endif %}
+            
+            
+            <div class="p-4 bg-light mb-5">
+              <ul class="list-inline mb-0">
+                <li class="list-inline-item mr-2 pr-lg-2"><a class="tag reset-anchor" href="#"><i class="fas fa-bookmark text-primary mr-2"></i>Travel</a></li>
+                <li class="list-inline-item mr-2 pr-lg-2"><a class="tag reset-anchor" href="#"><i class="fas fa-bookmark text-primary mr-2"></i>Lifestyle</a></li>
+                <li class="list-inline-item mr-2 pr-lg-2"><a class="tag reset-anchor" href="#"><i class="fas fa-bookmark text-primary mr-2"></i>Vacation</a></li>
+              </ul>
+            </div>
+            
+            <h3 class="h4 mb-4">Leave a comment</h3>
+            <form method='post' class="mb-5" action=".">
+              {% csrf_token %}
+              <div class="row">
+                
+                <div class="form-group col-lg-12">
+                  {{ form }}
+                </div>
+                <div class="form-group col-lg-12">
+                  <button class="btn btn-dark" type="submit">Submit your comment</button>
+                </div>
+              </div>
+            </form>
+            <h3 class="h4 mb-4 d-flex align-items-center"><span>Comments</span><span class="text-small ml-3 text-gray">{{post.comment_count}}</span></h3>
+            
+            </div>
+            <!-- Categories widget -->
+            <div class="mb-5 text-center"><a class="category reset-anchor bg-cover bg-center mb-2" href="#" style="background: url(img/category-1.jpg)">
+                <p class="category-title text-uppercase small">Lifestyle</p></a><a class="category reset-anchor bg-cover bg-center mb-2" href="#" style="background: url(img/category-2.jpg)">
+                <p class="category-title text-uppercase small">Travel</p></a><a class="category reset-anchor bg-cover bg-center" href="#" style="background: url(img/category-3.jpg)">
+                <p class="category-title text-uppercase small">Vacation</p></a></div>
+            <!-- Newsletter widget -->
+            <div class="px-4 py-5 bg-light mb-5 text-center">
+              <h3 class="h5"><i class="far fa-envelope mr-2"></i>Join the family</h3>
+              <p class="text-small text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod.</p>
+              <form method='post' action=".">
+                {% csrf_token %}
+                <div class="form-group mb-1">
+                  <input class="form-control form-control-sm" type="email" name="email" placeholder="Emaill address">
+                </div>
+                <div class="form-group mb-0">
+                  <button class="btn btn-dark btn-block btn-sm" type="submit">Subscribe</button>
+                </div>
+              </form>
+            </div>
+            <!-- Latest posts widget -->
+            <div class="mb-5">
+              <h3 class="h5">Latest posts</h3>
+              <p class="text-small text-muted mb-4">Lorem ipsum dolor sit, consectetur adipisicing elit, sed do eiusmod.</p>
+              <ul class="list-unstyled">
+                {% for post in most_recent %}
+                <li class="media mb-1"><a href="{{post.get_absolute_url}}"><img src="{{post.thumbnail.url}}" alt="" width="80"></a>
+                  <div class="media-body ml-3">
+                    <p class="small text-primary text-uppercase mb-0">{{post.timestamp}}</p>
+                    <h6 class="mb-1"><a class="reset-anchor" href="post.html">{{post.title}}</a></h6>
+                    
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="bg-dark py-4">
+      <div class="container">
+        <div class="row py-2">
+          <div class="col-lg-4 text-center text-lg-left mb-2 mb-lg-0">
+            <p class="small text-muted text-uppercase mb-0">&copy; copyright 2020 - all rights reserved</p>
+          </div>
+          <div class="col-lg-4 text-center mb-2 mb-lg-0">
+            <ul class="list-inline text-white small mb-0">
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-facebook-f"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-twitter"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-instagram"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-linkedin"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-youtube"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-vimeo-v"></i></a></li>
+            </ul>
+          </div>
+          <div class="col-lg-4 text-center text-lg-right">
+            <p class="small text-muted text-uppercase mb-0">Template designed by <a href="#">Bootstrap Temple</a>. </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+{% endblock content %}

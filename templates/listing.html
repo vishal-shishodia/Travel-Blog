@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <section class="hero bg-center bg-cover" style="background: url(img/hero-banner.jpg)">
+      <div class="dark-overlay py-5">
+        <div class="overlay-content">
+          <div class="container py-5 text-white text-center">
+            <h1>Blog listing</h1>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Blog listing -->
+    <section class="pt-5">
+      <div class="container pt-5">
+        <div class="row mb-5">
+          <div class="col-lg-8">
+            <div class="row text-center">
+              {% for post in queryset %}
+              <div class="col-lg-6 mb-5"><a href="{{post.get_absolute_url}}"><img class="img-fluid mb-4" src="{{post.thumbnail.url}}" alt=""/></a>
+                <ul class="list-inline small text-uppercase mb-0">
+                  <li class="list-inline-item mr-0 text-gray align-middle">By </li>
+                  <li class="list-inline-item align-middle mr-0"><a class="font-weight-bold reset-anchor" href="#">{{post.author.user.username}}</a></li>
+                  <li class="list-inline-item text-gray align-middle mr-0">|</li>
+                  <li class="list-inline-item text-gray align-middle">{{post.timestamp}}</li>
+                </ul>
+                <h3 class="h4 mt-2"> <a class="reset-anchor" href="post.html">{{post.title}}</a></h3>
+                <p class="text-small mb-1">{{post.content}}</p><a class="btn btn-link" href="{{post.get_absolute_url}}">Continue reading</a>
+              </div>
+              {% endfor %}
+            </div>
+            
+            <!-- Listing navigation -->
+            <div class="p-4 bg-light mb-5">
+              <div class="row">
+                {% if queryset.has_previous %}
+                <div class="col-sm-6 text-center text-sm-left mb-2 mb-sm-0"><a class="btn btn-outline-secondary btn-sm" href="?{{ page_request_var }}={{ queryset.previous_page_number }}"><i class="fas fa-angle-left mr-2"></i>Prev posts</a></div>
+                {% endif %}
+                <a href="?{{ page_request_var }}={{ queryset.number }}" class="page-link active">{{ queryset.number }}</a>
+                {% if queryset.has_next %}
+                <div class="col-sm-6 text-center text-sm-right text-right"><a class="btn btn-outline-secondary btn-sm" href="?{{ page_request_var }}={{ queryset.next_page_number }}">Next posts<i class="fas fa-angle-right ml-2"></i></a></div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <!-- Sidebar -->
+          <div class="col-lg-4">
+            
+            <!-- Categories widget -->
+            <div class="mb-5 text-center"><a class="category reset-anchor bg-cover bg-center mb-2" href="#" style="background: url(img/category-1.jpg)">
+                <p class="category-title text-uppercase small">Lifestyle</p></a><a class="category reset-anchor bg-cover bg-center mb-2" href="#" style="background: url(img/category-2.jpg)">
+                <p class="category-title text-uppercase small">Travel</p></a><a class="category reset-anchor bg-cover bg-center" href="#" style="background: url(img/category-3.jpg)">
+                <p class="category-title text-uppercase small">Vacation</p></a></div>
+            <!-- Newsletter widget -->
+            <div class="px-4 py-5 bg-light mb-5 text-center">
+              <h3 class="h5"><i class="far fa-envelope mr-2"></i>Join the family</h3>
+              <p class="text-small text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod.</p>
+              <form method='post' action=".">
+                {% csrf_token %}
+                <div class="form-group mb-1">
+                  <input class="form-control form-control-sm" type="email" name="email" placeholder="Emaill address">
+                </div>
+                <div class="form-group mb-0">
+                  <button class="btn btn-dark btn-block btn-sm" type="submit">Subscribe</button>
+                </div>
+              </form>
+            </div>
+            <!-- Latest posts widget -->
+            <div class="mb-5">
+              <h3 class="h5">Latest posts</h3>
+              <p class="text-small text-muted mb-4">Lorem ipsum dolor sit, consectetur adipisicing elit, sed do eiusmod.</p>
+              <ul class="list-unstyled">
+                {% for post in most_recent %}
+                <li class="media mb-1"><a href="{{post.get_absolute_url}}"><img src="{{post.thumbnail.url}}" alt="" width="80"></a>
+                  <div class="media-body ml-3">
+                    <p class="small text-primary text-uppercase mb-0">{{post.timestamp}}</p>
+                    <h6 class="mb-1"><a class="reset-anchor" href="{{post.get_absolute_url}}">{{post.title}}</a></h6>
+                    
+                  </div>
+                </li>
+               {% endfor %}
+              </ul>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="bg-dark py-4">
+      <div class="container">
+        <div class="row py-2">
+          <div class="col-lg-4 text-center text-lg-left mb-2 mb-lg-0">
+            <p class="small text-muted text-uppercase mb-0">&copy; copyright 2020 - all rights reserved</p>
+          </div>
+          <div class="col-lg-4 text-center mb-2 mb-lg-0">
+            <ul class="list-inline text-white small mb-0">
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-facebook-f"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-twitter"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-instagram"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-linkedin"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-youtube"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-vimeo-v"></i></a></li>
+            </ul>
+          </div>
+          <div class="col-lg-4 text-center text-lg-right">
+            <p class="small text-muted text-uppercase mb-0">Template designed by <a href="https://bootstraptemple.com/p/bootstrap-travel">Bootstrap Temple</a>. </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+{% endblock content %}

@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <!-- Destinations -->
+    <section class="pt-5">
+      <div class="container">
+        <h1>Featured Destinations</h1>
+        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis aliquid</p>
+      </div>
+       {% for post in posts %}
+        <a class="destination d-flex align-items-end bg-center bg-cover" href="{{post.get_absolute_url}}" style="background: url({{ post.thumbnail.url }})">
+        
+          <div class="destination-inner w-100 text-center text-white index-forward has-transition">
+            <p class="small text-uppercase mb-0">{{ post.country.place }}</p>
+            <h2 class="h3 mb-4">{{ post.country }}</h2>
+            <div class="btn btn-primary btn-block destination-btn text-white">Discover</div>
+          </div></a>
+          {% endfor %}
+      
+    </section>
+    <!-- Divider Section -->
+    <section class="py-5">
+      <div class="container py-4">
+        <!-- Home listing -->
+        <div class="row align-items-stretch bg-full-left">
+          <div class="col-lg-6 pr-lg-0 order-2 order-lg-1">
+            <div class="h-100 bg-light d-flex align-items-center">
+              <div class="py-5 pr-4 pl-3 pl-lg-0">
+                <p class="text-primary font-weight-bold small text-uppercase mb-2">Travel guide</p>
+                {% for list_post in list_post %}
+                <h3 class="h4"> <a class="text-reset" href="post.html">{{list_post.title}}</a></h3>
+                <p class="text-muted text-small mb-3">{{list_post.content}}</p>
+                
+                <ul class="list-inline small text-uppercase mb-0">
+                  <li class="list-inline-item align-middle"><img class="rounded-circle shadow-sm" src="{{list_post.author.profile_picture.url}}" alt="" width="30"/></li>
+                  <li class="list-inline-item mr-0 text-gray align-middle">By </li>
+                  <li class="list-inline-item align-middle mr-0"><a class="font-weight-bold reset-anchor" href="#">{{list_post.author.user.username}} </a></li>
+                  <li class="list-inline-item text-gray align-middle mr-0">|</li>
+                  <li class="list-inline-item text-gray align-middle">{{list_post.timestamp|timesince}}ago</li>
+                </ul>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          {% for list_post in list_post %}
+          <div class="col-lg-6 pl-lg-0 order-1 order-lg-2"><a class="d-block h-100 bg-center bg-cover" href="post.html" style="background: url({{list_post.thumbnail.url}})"></a></div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+   
+    <!-- Subscribe section -->
+    <section class="py-5">
+      <div class="container py-4">
+        <div class="row align-items-center">
+          <div class="col-lg-6 position-relative py-4"><img class="subscribe-img" src="img/subscribe-img-1.jpg" alt=""><img class="subscribe-img" src="{% static 'img/subscribe-img-2.jpg' %}" alt=""></div>
+          <div class="col-lg-6">
+            <h2>Best money saving - Travel tips</h2>
+            <p class="text-muted mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos quidem facere aliquam, delectus, incidunt ipsum fugit deserunt ducimus quibusdam consequuntur quos numquam ipsa suscipit animi dolore. Est beatae inventore voluptas.</p>
+            <form method='post' action=".">
+              {% csrf_token %}
+              <div class="row">
+                <div class="form-group col-lg-8">
+                  <input class="form-control" type="email" name="email" placeholder="Enter your email address">
+                </div>
+                <div class="form-group col-lg-4">
+                  <button class="btn btn-dark btn-block" type="submit">Subscribe</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Top categories section -->
+    <section class="py-5 bg-light">
+      <div class="container py-4">
+        <header class="mb-5 text-center">
+          <h2>Top categories</h2>
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit</p>
+        </header>
+        <div class="row text-center">
+          {% for cat in category_count %}
+          <div class="col-lg-2 col-md-4 col-sm-6 mb-4 mb-lg-0"><a class="reset-anchor d-block" href="listing.html">
+              <svg class="svg-icon mb-3 svg-icon-big svg-icon-light text-primary">
+                <use xlink:href="#food-1"> </use>
+              </svg>
+              <h3 class="h5">{{ cat.category__title }}</h3>
+              <p class="text-muted text-small">{{cat.category__title__count}}</p></a>
+            </div>
+              {% endfor %}
+          
+        </div>
+      </div>
+    </section>
+
+    <footer class="bg-dark py-4">
+      <div class="container">
+        <div class="row py-2">
+          <div class="col-lg-4 text-center text-lg-left mb-2 mb-lg-0">
+            <p class="small text-muted text-uppercase mb-0">&copy; copyright 2020 - all rights reserved</p>
+          </div>
+          <div class="col-lg-4 text-center mb-2 mb-lg-0">
+            <ul class="list-inline text-white small mb-0">
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-facebook-f"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-twitter"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-instagram"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-linkedin"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-youtube"></i></a></li>
+              <li class="list-inline-item"><a class="reset-anchor" href="#"><i class="fab fa-vimeo-v"></i></a></li>
+            </ul>
+          </div>
+          <div class="col-lg-4 text-center text-lg-right">
+            <p class="small text-muted text-uppercase mb-0">Template designed by <a href="https://bootstraptemple.com/p/bootstrap-travel">Bootstrap Temple</a>. </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+{% endblock content %}
