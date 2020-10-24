@@ -64,39 +64,6 @@ def DetailView(request,pk):
 	most_recent=Post.objects.order_by('-timestamp')[:3]
 	post=get_object_or_404(Post,pk=pk)
 	comments=Comment.objects.filter(post=post)
-	'''
-	comments = post.comments.filter(active=True, parent__isnull=True)
-	if request.POST:
-		comment_form = CommentForm(request.POST)
-		if comment_form.is_valid():
-			parent_obj = None
-			# get parent comment id from hidden input
-			try:
-				parent_id = int(request.POST.get('parent_id'))
-			except:
-				parent_id = None
-			# if parent_id has been submitted get parent_obj id
-			if parent_id:
-				parent_obj = Comment.objects.get(id=parent_id)
-				# if parent object exist
-				if parent_obj:
-					# create reply comment object
-					reply_comment = comment_form.save(commit=False)
-					# assign parent_obj to reply comment
-					reply_comment.parent = parent_obj
-			# normal comment
-			new_comment = comment_form.save(commit=False)
-			new_comment.post = post
-			new_comment.save()
-			return redirect(reverse("detail", kwargs={
-							'pk': post.pk
-							}))
-	else:
-		comment_form = CommentForm()
-	'''
-	
-	
-	
 	context={'post':post,
 	'most_recent':most_recent,
 	'comments':comments,
@@ -138,10 +105,6 @@ def get_author(user):
 		return qs[0]
 	return None
 		
-	
-
-
-
 def ListView(request):
 	posts=Post.objects.all()
 	most_recent=Post.objects.order_by('-timestamp')[:3]
