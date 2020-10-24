@@ -1,8 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
+<style>
+  @media screen and (min-width: 600px) {
+    .children form {
+      margin-left: -48px;
+      /* will touch very left side */
+    }
 
+    .children .children form {
+      margin-left: -96px;
+      /* will touch very left side */
+    }
+  }
+</style>
     <section class="py-5">
       
       <div class="container text-center">
@@ -24,55 +37,102 @@
             <p class="lead first-letter-styled line-height-lg">{{post.content}}</p>
             {% if request.user.is_staff %}
               
-                <!-- Link--><a class="nav-link" href="{% url 'create' %}">Update</a>
+                <!-- Link--><a class="nav-link" href="{% url 'update' post.id %}">Update</a>
                 <a class="nav-link" href="{% url 'delete' post.id %}">Delete</a>
              
               {% endif %}
             
-            
-            <div class="p-4 bg-light mb-5">
-              <ul class="list-inline mb-0">
-                <li class="list-inline-item mr-2 pr-lg-2"><a class="tag reset-anchor" href="#"><i class="fas fa-bookmark text-primary mr-2"></i>Travel</a></li>
-                <li class="list-inline-item mr-2 pr-lg-2"><a class="tag reset-anchor" href="#"><i class="fas fa-bookmark text-primary mr-2"></i>Lifestyle</a></li>
-                <li class="list-inline-item mr-2 pr-lg-2"><a class="tag reset-anchor" href="#"><i class="fas fa-bookmark text-primary mr-2"></i>Vacation</a></li>
-              </ul>
-            </div>
-            
-            <h3 class="h4 mb-4">Leave a comment</h3>
-            <form method='post' class="mb-5" action=".">
-              {% csrf_token %}
-              <div class="row">
+           {% load social_share %}
+
+          {% post_to_facebook object_or_url "Share to Facebook!" %} 
+          {% post_to_whatsapp object_or_url "Share via WhatsApp!" %}
+          {% send_email object_or_url "Share via email!" %}
+          {% post_to_telegram object_or_url "Share via telegram" %}
+            <hr>
+
+        <h6>Comments ({{post.comment_count}})</h6>
+        {% if request.user.is_authenticated %}
+        <div class="form-group col-md-6" id="myDIV" style="display:block;">
+        <form action="/postComment/" method="post">
+          {% csrf_token %}
+            <input type="text" name="comment" placeholder="Comment" style="border-top: 0px; border-left: 0px; border-right: 0px; border-bottom: 2px solid;">
+            <input type="hidden" name="postID" value="{{post.id}}">
+            <input type="hidden" name="parentID" value="{{node.id}}">
+            <button type="submit" value="Submit" class="btn btn-dark btn-sm">Submit</button>
+      </form>
+      </div>{% else %}
+      <p><a  href="{% url 'login'  %}">Login</a>  to comment</p>
+      {% endif %}
+        {% load mptt_tags %}
+      
+      
+      
+
+      <div>
+        {% recursetree comments %}
+        <div id="{{ node.id }}" class="my-2 p-2" style="border: 1px solid grey">
+          
                 
-                <div class="form-group col-lg-12">
-                  {{ form }}
-                </div>
-                <div class="form-group col-lg-12">
-                  <button class="btn btn-dark" type="submit">Submit your comment</button>
-                </div>
-              </div>
-            </form>
-            <h3 class="h4 mb-4 d-flex align-items-center"><span>Comments</span><span class="text-small ml-3 text-gray">{{post.comment_count}}</span></h3>
+            
+          <div >
+            <img src="https://p7.hiclipart.com/preview/201/51/681/computer-icons-customer-service-user-others.jpg" alt="img" class="rounded"
+                    width="20px" height="20px">{{ node.user.username.capitalize }}|{{ node.posted_on|timesince }}
+                  </div>
+          <div>{{ node.comment }}</div>
+          <hr />
+          {% if node.level < 6 %}
+                {% if request.user.is_authenticated %}
+                <button class="button" onclick="myFunction({{ node.id }})">Reply</button>
+
+                {% endif %}
+          {% endif %}
+        </div>
+        {% if not node.is_leaf_node %}
+        <div class="children pl-2 pl-md-5">
+          {{ children }}
+        </div>
+        {% endif %}
+        {% endrecursetree %}
+      </div>
+
+    
+
+<script>
+  function formExit() {
+    document.getElementById("newForm").remove();
+  }
+
+  function myFunction(id) {
+    if (document.contains(document.getElementById("newForm"))) {
+      document.getElementById("newForm").remove();
+    }
+
+    var d1 = document.getElementById(id);
+    d1.insertAdjacentHTML('afterend',
+      '<form id="newForm" action="/postComment/" method="post">\
+                            {% csrf_token %}\
+                            <input type="text" name="comment" placeholder="Enter Reply" style="border-top: 0px; border-left: 0px; border-right: 0px; border-bottom: 2px solid;">\
+                            <input type="hidden" name="postID" value="{{post.id}}">\
+                            <input type="hidden" name="parentID" value="' + id + '">\
+                            <button type="submit" value="Submit" class="btn btn-dark btn-sm">Submit</button>\
+                        </form>');
+    
+
+    //document.querySelector('#id_parentt [value="' + id + '"]').selected = true;
+  }
+
+  $('#myForm').trigger("reset");
+  
+</script>
+
+
+
+
+           
             
             </div>
-            <!-- Categories widget -->
-            <div class="mb-5 text-center"><a class="category reset-anchor bg-cover bg-center mb-2" href="#" style="background: url(img/category-1.jpg)">
-                <p class="category-title text-uppercase small">Lifestyle</p></a><a class="category reset-anchor bg-cover bg-center mb-2" href="#" style="background: url(img/category-2.jpg)">
-                <p class="category-title text-uppercase small">Travel</p></a><a class="category reset-anchor bg-cover bg-center" href="#" style="background: url(img/category-3.jpg)">
-                <p class="category-title text-uppercase small">Vacation</p></a></div>
-            <!-- Newsletter widget -->
-            <div class="px-4 py-5 bg-light mb-5 text-center">
-              <h3 class="h5"><i class="far fa-envelope mr-2"></i>Join the family</h3>
-              <p class="text-small text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod.</p>
-              <form method='post' action=".">
-                {% csrf_token %}
-                <div class="form-group mb-1">
-                  <input class="form-control form-control-sm" type="email" name="email" placeholder="Emaill address">
-                </div>
-                <div class="form-group mb-0">
-                  <button class="btn btn-dark btn-block btn-sm" type="submit">Subscribe</button>
-                </div>
-              </form>
-            </div>
+            
+
             <!-- Latest posts widget -->
             <div class="mb-5">
               <h3 class="h5">Latest posts</h3>
@@ -82,7 +142,7 @@
                 <li class="media mb-1"><a href="{{post.get_absolute_url}}"><img src="{{post.thumbnail.url}}" alt="" width="80"></a>
                   <div class="media-body ml-3">
                     <p class="small text-primary text-uppercase mb-0">{{post.timestamp}}</p>
-                    <h6 class="mb-1"><a class="reset-anchor" href="post.html">{{post.title}}</a></h6>
+                    <h6 class="mb-1"><a class="reset-anchor" href="{{post.get_absolute_url}}">{{post.title}}</a></h6>
                     
                   </div>
                 </li>

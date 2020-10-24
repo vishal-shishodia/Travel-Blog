@@ -19,12 +19,25 @@
               <li class="nav-item px-1">
                 <!-- Link--><a class="nav-link" href="{% url 'list' %}">Listing</a>
               </li>
-              {% if request.user.is_staff %}
+              {% if request.user.is_superuser %}
               <li class="nav-item px-1">
                 <!-- Link--><a class="nav-link" href="{% url 'create' %}">Create</a>
               </li>
               {% endif %}
-              
+              <li class="nav-item px-1"></li>
+              <form action="{% url 'search' %}" class="search-form">
+                <div class="form-group">
+                  <input type="text" name='q' placeholder="Search..">
+                  <button type="submit" class="submit">search</button>
+                </div>
+              </form>
+              <li class="nav-item px-1">
+                <!-- Link--><a class="nav-link" href="{% url 'register' %}">Register</a>
+              </li>
+              <li class="nav-item px-1">
+                <!-- Link--><a class="nav-link" href="{% url 'login' %}">Login</a>
+              </li>
+              </ul>
             </ul>
           </div>
         </div>

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from mptt.models import MPTTModel, TreeForeignKey
 # Create your models here.
 
 class Author(models.Model):
@@ -23,15 +24,6 @@ class Category(models.Model):
 	def __str__(self):
 		return self.title
 
-class Comment(models.Model):
-	user = models.ForeignKey(User, on_delete=models.CASCADE)
-	timestamp = models.DateTimeField(auto_now_add=True)
-	content = models.TextField()
-	post = models.ForeignKey(
-		'Post', related_name='comments', on_delete=models.CASCADE)
-
-	def __str__(self):
-		return self.user.username
 
 class Country(models.Model):
 	name = models.CharField(max_length=20)
@@ -45,7 +37,6 @@ class Post(models.Model):
 	content = models.CharField(max_length=300,blank=False,null=False)
 	author = models.ForeignKey(Author,on_delete=models.CASCADE)
 	timestamp = models.DateTimeField(auto_now_add=True)
-	comment_count = models.IntegerField(default = 0)
 	category = models.ForeignKey(Category,on_delete=models.CASCADE)
 	country = models.ForeignKey(Country,on_delete=models.CASCADE,default=None)
 	thumbnail = models.ImageField()
@@ -62,3 +53,23 @@ class Post(models.Model):
 
 	def get_absolute_url(self):
 		return reverse('detail',kwargs={'pk':self.pk})
+
+	@property
+	def comment_count(self):
+		return Comment.objects.filter(post=self).count()
+
+
+class Comment(MPTTModel):
+	comment = models.TextField()
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	post = models.ForeignKey(Post, on_delete=models.CASCADE)
+	parent = TreeForeignKey('self',on_delete=models.CASCADE,null=True,related_name="children",)
+	posted_on = models.DateTimeField(auto_now_add=True)
+
+	class MPTTMeta:
+		order_insertion_by = ['posted_on']
+
+	def __str__(self):
+		return self.comment[:15] + "... by " + str(self.user.username)
+	
+

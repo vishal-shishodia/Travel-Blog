@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'posts',
     'crispy_forms',
+    'mptt',
+    'django_social_share',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +54,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'travelblog.urls'
+LOGIN_REDIRECT_URL='index'
 
 TEMPLATES = [
     {

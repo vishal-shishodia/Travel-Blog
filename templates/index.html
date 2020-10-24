@@ -30,7 +30,7 @@
               <div class="py-5 pr-4 pl-3 pl-lg-0">
                 <p class="text-primary font-weight-bold small text-uppercase mb-2">Travel guide</p>
                 {% for list_post in list_post %}
-                <h3 class="h4"> <a class="text-reset" href="post.html">{{list_post.title}}</a></h3>
+                <h3 class="h4"> <a class="text-reset" href="{{post.get_absolute_url}}">{{list_post.title}}</a></h3>
                 <p class="text-muted text-small mb-3">{{list_post.content}}</p>
                 
                 <ul class="list-inline small text-uppercase mb-0">
@@ -45,7 +45,7 @@
             </div>
           </div>
           {% for list_post in list_post %}
-          <div class="col-lg-6 pl-lg-0 order-1 order-lg-2"><a class="d-block h-100 bg-center bg-cover" href="post.html" style="background: url({{list_post.thumbnail.url}})"></a></div>
+          <div class="col-lg-6 pl-lg-0 order-1 order-lg-2"><a class="d-block h-100 bg-center bg-cover" href="{{post.get_absolute_url}}" style="background: url({{list_post.thumbnail.url}})"></a></div>
           {% endfor %}
         </div>
       </div>

@@ -1,7 +1,9 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
-from django.db.models import Count
+from django.db.models import Count,Q
 from django.urls import reverse
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login,authenticate
 
 from .models import *
 from .forms import *
@@ -10,12 +12,40 @@ def get_category_count():
 	queryset=Post.objects.values('category__title').annotate(Count('category__title'))
 	return queryset
 
+def search(request):
+	querset=Post.objects.all()
+	query=request.GET.get('q')
+	if query:
+		queryset=querset.filter(
+			Q(title__icontains=query)|
+			Q(content__icontains=query)
+			).distinct()
+	context={'queryset':queryset}
+	return render(request,'search_results.html',context)
+
 def SignUp(request,*args):
 	if request.POST:
 		email=request.POST['email']
 		new_signup=Signup()
 		new_signup.email=email
 		new_signup.save()
+
+def Register(request):
+	if request.POST:
+		form=UserCreationForm(request.POST)
+		if form.is_valid():
+			form.save(commit=False)
+			username=form.cleaned_data.get('username')
+			password=form.cleaned_data.get('password1')
+			form.save()
+			user=authenticate(username=username,password=password)
+			if user:
+				login(request,user)
+				return redirect('index')
+	else:
+		form=UserCreationForm()
+	context={'form':form}
+	return render(request,'register.html',context)
 
 
 def index(request):
@@ -33,23 +63,84 @@ def index(request):
 def DetailView(request,pk):
 	most_recent=Post.objects.order_by('-timestamp')[:3]
 	post=get_object_or_404(Post,pk=pk)
-	
-	form=CommentForm()
+	comments=Comment.objects.filter(post=post)
+	'''
+	comments = post.comments.filter(active=True, parent__isnull=True)
 	if request.POST:
-		form=CommentForm(request.POST)
-		if form.is_valid():
-			form.instance.user=request.user
-			form.instance.post=post
-			form.save()
+		comment_form = CommentForm(request.POST)
+		if comment_form.is_valid():
+			parent_obj = None
+			# get parent comment id from hidden input
+			try:
+				parent_id = int(request.POST.get('parent_id'))
+			except:
+				parent_id = None
+			# if parent_id has been submitted get parent_obj id
+			if parent_id:
+				parent_obj = Comment.objects.get(id=parent_id)
+				# if parent object exist
+				if parent_obj:
+					# create reply comment object
+					reply_comment = comment_form.save(commit=False)
+					# assign parent_obj to reply comment
+					reply_comment.parent = parent_obj
+			# normal comment
+			new_comment = comment_form.save(commit=False)
+			new_comment.post = post
+			new_comment.save()
 			return redirect(reverse("detail", kwargs={
 							'pk': post.pk
 							}))
-	SignUp(request)
+	else:
+		comment_form = CommentForm()
+	'''
+	
+	
+	
 	context={'post':post,
 	'most_recent':most_recent,
-	'form':form
+	'comments':comments,
+	
 	}
 	return render(request,'post.html',context)
+	
+def postComment(request):
+	if request.method == "POST":
+		comment = request.POST.get("comment")
+		user = request.user
+		postID = request.POST.get("postID")
+		post = Post.objects.get(id=postID)
+		parentID = request.POST.get("parentID")
+
+		if parentID == "":
+			comment = Comment(
+			comment=comment,
+			user=user,
+			post=post
+			)
+		else:
+			parent = Comment.objects.get(id=parentID)
+			comment = Comment(
+			comment=comment,
+			user=user,
+			post=post,
+			parent=parent
+			)
+
+	comment.save()
+
+	return redirect(f'/detail/{postID}/')
+		
+		
+def get_author(user):
+	qs = Author.objects.filter(user=user)
+	if qs.exists():
+		return qs[0]
+	return None
+		
+	
+
+
 
 def ListView(request):
 	posts=Post.objects.all()
@@ -78,7 +169,7 @@ def ListView(request):
 def PostCreate(request):
 	title='Create'
 	form=PostForm(request.POST or None, request.FILES or None)
-	author=Author.objects.get(user=request.user)
+	author=get_author(request.user)
 	print(author)
 	if request.POST:
 		if form.is_valid():
